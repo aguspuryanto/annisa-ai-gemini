@@ -1,0 +1,6 @@
+{
+  "name": "Annisa AI - Analisa Teknikal Saham AI & Screener",
+  "description": "Screener saham canggih dengan filter indikator teknikal & fundamental lengkap, analisa bandarmologi, dan dashboard analitik real-time interaktif berbasis Annisa AI.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
