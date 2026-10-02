@@ -8,6 +8,7 @@ import { AnnisaAiView } from './components/AnnisaAiView';
 import { BacktestView } from './components/BacktestView';
 import { AlertsView } from './components/AlertsView';
 import { EducationView } from './components/EducationView';
+import { PortfolioView } from './components/PortfolioView';
 import { StockSearchModal } from './components/StockSearchModal';
 import { AlertNotificationDrawer } from './components/AlertNotificationDrawer';
 import { KillerRecipe } from './utils/educationContent';
@@ -282,6 +283,14 @@ export default function App() {
             stocks={stocks}
             selectedStock={selectedStock}
             onSelectStock={setSelectedStock}
+          />
+        )}
+
+        {activeTab === 'portfolio' && (
+          <PortfolioView
+            stocks={stocks}
+            onSelectStock={setSelectedStock}
+            setActiveTab={setActiveTab}
           />
         )}
 

@@ -12,11 +12,12 @@ import {
   ShieldAlert,
   Volume2,
   VolumeX,
-  Clock
+  Clock,
+  Briefcase
 } from 'lucide-react';
 import { StockItem } from '../types/stock';
 
-export type ActiveTab = 'dashboard' | 'screener' | 'annisa-ai' | 'backtest' | 'alerts' | 'education';
+export type ActiveTab = 'dashboard' | 'screener' | 'annisa-ai' | 'portfolio' | 'backtest' | 'alerts' | 'education';
 
 interface HeaderProps {
   activeTab: ActiveTab;
@@ -206,6 +207,18 @@ export const Header: React.FC<HeaderProps> = ({
             </button>
 
             <button
+              onClick={() => setActiveTab('portfolio')}
+              className={`flex items-center gap-2 px-3 py-2 rounded-lg text-xs font-medium transition ${
+                activeTab === 'portfolio'
+                  ? 'bg-cyan-500/15 text-cyan-300 border border-cyan-500/30'
+                  : 'text-slate-300 hover:text-white hover:bg-slate-800/60'
+              }`}
+            >
+              <Briefcase className="w-4 h-4 text-emerald-400" />
+              <span>Portfolio Tracker</span>
+            </button>
+
+            <button
               onClick={() => setActiveTab('backtest')}
               className={`flex items-center gap-2 px-3 py-2 rounded-lg text-xs font-medium transition ${
                 activeTab === 'backtest'
@@ -296,6 +309,7 @@ export const Header: React.FC<HeaderProps> = ({
           { id: 'dashboard', label: 'Dashboard', icon: LineChart },
           { id: 'screener', label: 'Screener', icon: SlidersHorizontal },
           { id: 'annisa-ai', label: 'Annisa AI', icon: Sparkles },
+          { id: 'portfolio', label: 'Portofolio', icon: Briefcase },
           { id: 'backtest', label: 'Backtest', icon: FlaskConical },
           { id: 'alerts', label: 'Peringatan', icon: ShieldAlert },
           { id: 'education', label: 'Akademi', icon: BookOpen },

@@ -4,6 +4,25 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Annisa AI - Analisa Teknikal Saham AI & Screener</title>
+    <script>
+      // Fix "Cannot set property fetch of #<Window> which has only a getter"
+      (function() {
+        try {
+          const nativeFetch = window.fetch ? window.fetch.bind(window) : null;
+          let customFetch = nativeFetch;
+          Object.defineProperty(window, 'fetch', {
+            get: function() {
+              return customFetch;
+            },
+            set: function(fn) {
+              customFetch = fn;
+            },
+            configurable: true,
+            enumerable: true
+          });
+        } catch (e) {}
+      })();
+    </script>
     <meta name="description" content="Screener saham canggih dengan filter indikator teknikal & fundamental lengkap, analisa bandarmologi, dan dashboard analitik real-time interaktif berbasis Annisa AI." />
     <meta property="og:title" content="Annisa AI - Analisa Teknikal Saham AI & Screener" />
     <meta property="og:description" content="Screener saham canggih dengan filter indikator teknikal & fundamental lengkap, analisa bandarmologi, dan dashboard analitik real-time interaktif berbasis Annisa AI." />

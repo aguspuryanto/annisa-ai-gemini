@@ -298,3 +298,13 @@ export interface AiPriceProjection {
   momentumScore: number;
   volatilityBand: string;
 }
+
+export interface PortfolioPosition {
+  id: string;
+  ticker: string;
+  buyPrice: number; // IDR per share
+  lots: number; // 1 lot = 100 shares
+  buyDate: string; // YYYY-MM-DD
+  notes?: string;
+  feeIncluded?: boolean; // 0.15% buy fee, 0.25% sell fee
+}
