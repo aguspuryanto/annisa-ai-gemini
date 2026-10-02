@@ -284,3 +284,17 @@ export interface AlertTriggerEvent {
   message: string;
   read: boolean;
 }
+
+export interface AiPriceProjection {
+  minPrice: number;
+  maxPrice: number;
+  targetMid: number;
+  direction: 'BULLISH' | 'MODERATE_BULLISH' | 'NEUTRAL' | 'PULLBACK';
+  expectedChangeMinPct: number;
+  expectedChangeMaxPct: number;
+  confidencePct: number;
+  horizonDays: string;
+  primaryDriver: string;
+  momentumScore: number;
+  volatilityBand: string;
+}

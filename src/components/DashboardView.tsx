@@ -17,6 +17,7 @@ import { InteractiveChart } from './InteractiveChart';
 import { OrderBook } from './OrderBook';
 import { BandarmologiSection } from './BandarmologiSection';
 import { SectorAnalysisSection } from './SectorAnalysisSection';
+import { AiPricePredictionBadge } from './AiPricePredictionBadge';
 import { ActiveTab } from './Header';
 
 interface DashboardViewProps {
@@ -92,8 +93,8 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
             </div>
           </div>
 
-          {/* Current Price & Day Change */}
-          <div className="flex items-center gap-6">
+          {/* Current Price, AI Projection & Day Change */}
+          <div className="flex flex-wrap items-center gap-4 sm:gap-6">
             <div>
               <span className="text-[10px] text-slate-500 uppercase tracking-wider block font-medium">Harga Terakhir</span>
               <div className="flex items-baseline gap-2">
@@ -106,6 +107,9 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
                 </span>
               </div>
             </div>
+
+            {/* AI-Driven Short-Term Price Prediction Badge */}
+            <AiPricePredictionBadge stock={stock} variant="compact" />
 
             {/* Quick Action Buttons */}
             <div className="hidden lg:flex items-center gap-2">
@@ -285,6 +289,11 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
                   <div className="h-full bg-purple-400 rounded-full" style={{ width: `${stock.bandar.score}%` }} />
                 </div>
               </div>
+            </div>
+
+            {/* AI Momentum Price Projection Card */}
+            <div className="mt-3.5">
+              <AiPricePredictionBadge stock={stock} variant="detailed" />
             </div>
 
             {/* Actionable Trading Plan Snapshot */}

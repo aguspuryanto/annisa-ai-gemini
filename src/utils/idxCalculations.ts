@@ -1,4 +1,4 @@
-import { OHLCVBar, TechnicalIndicators, FundamentalMetrics, BandarmologiData, SignalVerdict } from '../types/stock';
+import { OHLCVBar, TechnicalIndicators, FundamentalMetrics, BandarmologiData, SignalVerdict, StockItem, AiPriceProjection } from '../types/stock';
 
 /**
  * Aturan Fraksi Harga Bursa Efek Indonesia (IDX Tick Size Rules)
@@ -357,4 +357,100 @@ export function formatCompactIDR(valueInBillion: number): string {
     return `${(valueInBillion / 1000).toFixed(2)} T`;
   }
   return `${valueInBillion.toFixed(1)} M`;
+}
+
+/**
+ * AI-Driven Short-Term Price Range Projection Engine
+ * Memproyeksikan rentang target harga 5 - 10 hari bursa ke depan berbasis
+ * momentum (RSI, MACD, RVOL, ATR, dan partisipasi smart money bandar).
+ */
+export function calculateAiPriceProjection(stock: StockItem): AiPriceProjection {
+  const { price, technicals, bandar, araPrice, arbPrice } = stock;
+  const tick = getIdxTickSize(price);
+  const atr = Math.max(tick * 2, technicals.atr14);
+
+  // Momentum factors (-1.0 to +1.0)
+  let momentumFactor = 0;
+  let driver = '';
+
+  // 1. RSI Golden Momentum
+  if (technicals.rsi14 >= 50 && technicals.rsi14 <= 68) {
+    momentumFactor += 0.35;
+    driver = `RSI (${technicals.rsi14}) di zona golden expansion momentum`;
+  } else if (technicals.rsi14 > 75) {
+    momentumFactor -= 0.15;
+    driver = `RSI (${technicals.rsi14}) overbought, waspada profit taking`;
+  } else if (technicals.rsi14 < 35) {
+    momentumFactor += 0.25;
+    driver = `RSI (${technicals.rsi14}) oversold, potensi technical mean-reversion`;
+  }
+
+  // 2. MACD Histogram Velocity
+  if (technicals.macdHistogram > 0) {
+    momentumFactor += 0.25;
+  } else if (technicals.macdHistogram < 0) {
+    momentumFactor -= 0.20;
+  }
+
+  // 3. Volume Spike (RVOL)
+  if (technicals.rvol >= 1.4) {
+    momentumFactor += 0.25;
+    driver = `Lonjakan volume (${technicals.rvol.toFixed(1)}x) mengonfirmasi dorongan momentum`;
+  }
+
+  // 4. Bandarmologi Accumulation Support
+  if (bandar.score >= 75) {
+    momentumFactor += 0.25;
+    driver = `Akumulasi smart money (${bandar.score}/100) menjaga struktur support`;
+  } else if (bandar.score <= 45) {
+    momentumFactor -= 0.25;
+    driver = `Distribusi broker institusi menekan momentum jangka pendek`;
+  }
+
+  // Direction classification & multipliers
+  let direction: AiPriceProjection['direction'] = 'NEUTRAL';
+  let targetMultiplierUpside = 1.8;
+  let targetMultiplierDownside = 1.0;
+  let confidencePct = 78;
+
+  if (momentumFactor >= 0.5) {
+    direction = 'BULLISH';
+    targetMultiplierUpside = 2.8;
+    targetMultiplierDownside = 0.8;
+    confidencePct = Math.min(94, Math.round(75 + stock.aiScore * 0.2));
+  } else if (momentumFactor >= 0.15) {
+    direction = 'MODERATE_BULLISH';
+    targetMultiplierUpside = 2.0;
+    targetMultiplierDownside = 1.0;
+    confidencePct = Math.min(88, Math.round(72 + stock.aiScore * 0.16));
+  } else if (momentumFactor <= -0.2) {
+    direction = 'PULLBACK';
+    targetMultiplierUpside = 0.8;
+    targetMultiplierDownside = 2.2;
+    confidencePct = 76;
+  }
+
+  const rawMin = Math.max(arbPrice, price - (atr * targetMultiplierDownside));
+  const rawMax = Math.min(araPrice, price + (atr * targetMultiplierUpside));
+  const minPrice = roundToIdxTick(rawMin, 'down');
+  const maxPrice = roundToIdxTick(rawMax, 'up');
+  const targetMid = roundToIdxTick((minPrice + maxPrice) / 2, 'nearest');
+
+  const expectedChangeMinPct = Number((((minPrice - price) / price) * 100).toFixed(1));
+  const expectedChangeMaxPct = Number((((maxPrice - price) / price) * 100).toFixed(1));
+  const momentumScore = Math.min(100, Math.max(10, Math.round(50 + momentumFactor * 45)));
+
+  return {
+    minPrice,
+    maxPrice,
+    targetMid,
+    direction,
+    expectedChangeMinPct,
+    expectedChangeMaxPct,
+    confidencePct,
+    horizonDays: '5 - 10 Hari Bursa',
+    primaryDriver: driver || 'Kombinasi multi-faktor indikator teknikal & volume IDX',
+    momentumScore,
+    volatilityBand: `ATR(14) Rp ${atr}`
+  };
 }
